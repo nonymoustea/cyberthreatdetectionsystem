@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Result - AI Email Threat Detector{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Main Result Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-{{ 'danger' if analysis.result == 'Phishing' else 'success' }} text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-{{ 'exclamation-triangle' if analysis.result == 'Phishing' else 'check-circle' }} me-2"></i>
+                    Analysis Complete
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5 class="card-title">{{ analysis.filename }}</h5>
+                        <p class="card-text text-muted mb-3">
+                            <i class="fas fa-clock me-2"></i>
+                            Analyzed on {{ analysis.timestamp[:19].replace('T', ' ') }}
+                        </p>
+                        
+                        <!-- Result Badge -->
+                        <div class="mb-3">
+                            {% if analysis.result == 'Phishing' %}
+                                <span class="badge bg-danger fs-6 p-3">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    PHISHING DETECTED
+                                </span>
+                            {% else %}
+                                <span class="badge bg-success fs-6 p-3">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    LEGITIMATE FILE
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="threat-level-indicator">
+                            {% if analysis.threat_level == 'HIGH' %}
+                                <div class="circle-danger">
+                                    <i class="fas fa-exclamation-triangle fa-3x"></i>
+                                </div>
+                                <h6 class="mt-2 text-danger">HIGH RISK</h6>
+                            {% else %}
+                                <div class="circle-success">
+                                    <i class="fas fa-shield-alt fa-3x"></i>
+                                </div>
+                                <h6 class="mt-2 text-success">LOW RISK</h6>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Analysis -->
+        <div class="card shadow mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-microscope me-2"></i>
+                    Detailed Analysis
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-file me-2"></i>File Information</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Filename:</strong> {{ analysis.filename }}</li>
+                            <li><strong>Analysis ID:</strong> {{ analysis.id[:8] }}...</li>
+                            <li><strong>Timestamp:</strong> {{ analysis.timestamp[:19].replace('T', ' ') }}</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-chart-bar me-2"></i>Threat Assessment</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Result:</strong> {{ analysis.result }}</li>
+                            <li><strong>Threat Level:</strong> 
+                                <span class="badge bg-{{ 'danger' if analysis.threat_level == 'HIGH' else 'success' }}">
+                                    {{ analysis.threat_level }}
+                                </span>
+                            </li>
+                            {% if analysis.confidence %}
+                                <li><strong>Confidence:</strong> {{ analysis.confidence }}%</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Recommendations -->
+        <div class="card shadow mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    Security Recommendations & Next Steps
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if analysis.result == 'Phishing' %}
+                    <!-- High Threat Recommendations -->
+                    <div class="alert alert-danger mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <div class="circle-danger-small">
+                                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <h6 class="alert-heading mb-2">
+                                    <strong>⚠️ CRITICAL SECURITY ALERT</strong>
+                                </h6>
+                                <p class="mb-0">This file contains potential phishing or malicious content. <strong>Immediate action required.</strong></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Immediate Actions -->
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-danger h-100">
+                                <div class="card-header bg-danger text-white">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-fire me-2"></i>Immediate Actions
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="checklist">
+                                        <div class="checklist-item">
+                                            <i class="fas fa-times-circle text-danger me-2"></i>
+                                            <strong>DO NOT</strong> open any links in this file
+                                        </div>
+                                        <div class="checklist-item">
+                                            <i class="fas fa-times-circle text-danger me-2"></i>
+                                            <strong>DO NOT</strong> download any additional attachments
+                                        </div>
+                                        <div class="checklist-item">
+                                            <i class="fas fa-times-circle text-danger me-2"></i>
+                                            <strong>DO NOT</strong> enter personal information
+                                        </div>
+                                        <div class="checklist-item">
+                                            <i class="fas fa-trash text-danger me-2"></i>
+                                            Delete the original email immediately
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Prevention Tips -->
+                    <div class="card border-info">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-lightbulb me-2"></i>Future Prevention Tips
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>Always verify sender identity</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Check for spelling/grammar errors</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Hover over links before clicking</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>Use multi-factor authentication</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Keep software updated</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Use email filtering tools</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                {% else %}
+                    <!-- Low Threat Recommendations -->
+                    <div class="alert alert-success mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <div class="circle-success-small">
+                                    <i class="fas fa-check-circle fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <h6 class="alert-heading mb-2">
+                                    <strong>✅ FILE APPEARS LEGITIMATE</strong>
+                                </h6>
+                                <p class="mb-0">Our AI analysis indicates this file is likely safe, but always stay vigilant.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Best Practices -->
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-success h-100">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-shield-alt me-2"></i>Best Practices
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="checklist">
+                                        <div class="checklist-item">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            Verify sender through separate channel
+                                        </div>
+                                        <div class="checklist-item">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            Check for unexpected attachments
+                                        </div>
+                                        <div class="checklist-item">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            Look for urgency red flags
+                                        </div>
+                                        <div class="checklist-item">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            Trust your instincts
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-primary h-100">
+                                <div class="card-header bg-primary text-white">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-cog me-2"></i>System Maintenance
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="checklist">
+                                        <div class="checklist-item">
+                                            <i class="fas fa-sync text-primary me-2"></i>
+                                            Keep antivirus software updated
+                                        </div>
+                                        <div class="checklist-item">
+                                            <i class="fas fa-download text-primary me-2"></i>
+                                            Install security patches regularly
+                                        </div>
+                                        <div class="checklist-item">
+                                            <i class="fas fa-backup text-primary me-2"></i>
+                                            Backup important data
+                                        </div>
+                                        <div class="checklist-item">
+                                            <i class="fas fa-graduation-cap text-primary me-2"></i>
+                                            Stay informed about latest threats
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Resources -->
+                    <div class="card border-info">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-info-circle me-2"></i>Additional Security Resources
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 text-center mb-3">
+                                    <div class="resource-item">
+                                        <i class="fas fa-book fa-2x text-info mb-2"></i>
+                                        <h6>Security Training</h6>
+                                        <small class="text-muted">Learn about latest threats</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-center mb-3">
+                                    <div class="resource-item">
+                                        <i class="fas fa-users fa-2x text-info mb-2"></i>
+                                        <h6>Report Suspicious</h6>
+                                        <small class="text-muted">Help protect others</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-center mb-3">
+                                    <div class="resource-item">
+                                        <i class="fas fa-tools fa-2x text-info mb-2"></i>
+                                        <h6>Security Tools</h6>
+                                        <small class="text-muted">Enhance your protection</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Emergency Contacts -->
+                <div class="mt-4 p-3 bg-light rounded">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-2">
+                            <i class="fas fa-phone-alt text-danger me-2"></i>
+                            <strong>IT Security:</strong> ext. 911
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <i class="fas fa-envelope text-warning me-2"></i>
+                            <strong>Report:</strong> security@company.com
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <i class="fas fa-globe text-info me-2"></i>
+                            <strong>Resources:</strong> security.company.com
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <a href="{{ url_for('analyze_page') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-upload me-2"></i>Analyze Another File
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-tachometer-alt me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.circle-danger, .circle-success {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.circle-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border: 3px solid #dc3545;
+}
+
+.circle-success {
+    background-color: rgba(25, 135, 84, 0.1);
+    color: #198754;
+    border: 3px solid #198754;
+}
+
+.threat-level-indicator {
+    padding: 20px;
+}
+</style>
+{% endblock %} 

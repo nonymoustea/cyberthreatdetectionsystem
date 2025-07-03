@@ -1,0 +1,8 @@
+pandas
+scikit-learn
+joblib
+pdfminer.six
+pytesseract
+Pillow
+Flask
+Werkzeug 
